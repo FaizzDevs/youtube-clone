@@ -83,7 +83,7 @@ export async function POST(req: Request) {
             imageUrl: data.image_url,
         })
         .where(eq(users.clerkId, data.id));
-  },
+  };
 
   return new Response('Webhook received', { status: 200 })
 }
