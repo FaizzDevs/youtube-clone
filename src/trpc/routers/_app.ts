@@ -1,8 +1,13 @@
 // import { z } from 'zod';
+import { studioRouter } from '@/modules/studio/server/procedures';
 import { createTRPCRouter } from '../init';
 import { categoriesRouter } from '@/modules/categories/server/procedures';
 
 export const appRouter = createTRPCRouter({
+  // hello: baseProcedure.query(() => {
+  //   return {hello : "world"};
+  // }),
+  studio: studioRouter,
   categories: categoriesRouter,
 });
 // export type definition of API
