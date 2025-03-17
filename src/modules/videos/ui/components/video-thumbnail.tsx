@@ -1,4 +1,5 @@
-import Image from "next/image"
+import Image from "next/image";
+import { formatDuration } from "@/lib/utils";
 
 interface VideoThumbnailProps {
     imageUrl?: string | null;
@@ -23,6 +24,7 @@ export const VideoThumbnail = ({
                     fill 
                     className="w-full h-full object-cover group-hover:opacity-0" />
                 <Image 
+                    unoptimized={!!previewUrl}
                     src={previewUrl ?? "/placeholder.svg"} 
                     alt={title} 
                     fill 
@@ -31,7 +33,7 @@ export const VideoThumbnail = ({
 
             {/* video duration box */}
             <div className="absolute bottom-2 right-2 px-1 py-0.5 rounded bg-black/80 text-white text-xs font-medium">
-                {duration}
+                {formatDuration(duration)}
             </div>
             {/* add video duration box */}
         </div>
