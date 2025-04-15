@@ -4,7 +4,7 @@ import { trpc } from "@/trpc/client";
 import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Button } from "@/components/ui/button";
-import { MoreVerticalIcon, TrashIcon, CopyIcon, CopyCheckIcon } from "lucide-react";
+import { MoreVerticalIcon, TrashIcon, CopyIcon, CopyCheckIcon, Globe2Icon, LockIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,10 @@ import { videoUpdateSchema } from "@/db/schema";
 import { toast } from "sonner";
 import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
 import Link from "next/link";
+import { snakeCaseToTitle } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -37,6 +41,8 @@ import {
 } from "@/components/ui/select";
 
 
+
+
 interface FormSectionProps {
     videoId: string;
 }
@@ -56,16 +62,30 @@ const FormSectionSkeleton = () => {
 }
 
 const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
+    const router = useRouter();
     const utils = trpc.useUtils()
     const [video] = trpc.studio.getOne.useSuspenseQuery({ id: videoId });
     const [categories] = trpc.categories.getMany.useSuspenseQuery();
 
-    // update title and description video
+    // update title and description video studio
     const update = trpc.videos.update.useMutation({
         onSuccess: () => {
             utils.studio.getMany.invalidate();
             utils.studio.getOne.invalidate({ id: videoId });
             toast.success("Video details updated successfully");
+            router.push("/studio");
+        },
+        onError: () => {
+            toast.error("Error updating video details");
+        }
+    });
+
+    // remove video studio
+    const remove = trpc.videos.remove.useMutation({
+        onSuccess: () => {
+            utils.studio.getMany.invalidate();
+            toast.success("Video removed");
+            router.push("/studio");
         },
         onError: () => {
             toast.error("Error updating video details");
@@ -114,7 +134,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" side="left" >
-                                <DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => remove.mutate({ id: videoId })}>
                                     <TrashIcon className="size-4 mr-2" />
                                     Delete
                                 </DropdownMenuItem>
@@ -165,6 +185,40 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                 </FormItem>
                             )}
                         />
+
+                        <FormField
+                            name="thumbnailUrl"
+                            control={form.control}
+                            render={() => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Thumbnail
+                                    </FormLabel>
+                                    <FormControl>
+                                        <div className="p-0.5 border border-dashed border-neutral-400 relative h-[180px] w-[320px] group">
+                                            <Image 
+                                                src={video.thumbnailUrl || THUMBNAIL_FALLBACK}
+                                                fill 
+                                                alt="Thumbnail"
+                                                className="object-cover" />
+
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button
+                                                            type="button"
+                                                            size="icon"
+                                                            className="bg-black/50 hover:bg-black/50 absolute top-1 right-1 rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 duration-300 size-7"
+                                                        >
+                                                            <MoreVerticalIcon className="text-white" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                </DropdownMenu>
+                                        </div>
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+
                         {/* Add thumbnail field here */}
                         <FormField 
                             control={form.control}
@@ -229,8 +283,63 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                         </div>
                                     </div>
                                 </div>
+                            <div className="flex justify-between items-center">
+                                <div className="flex flex-col gap-y-1">
+                                    <p className="text-muted-foreground text-xs">Status</p>
+                                    <p className="text-sm">
+                                        {snakeCaseToTitle(video.muxStatus || "preparing")}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                                <div className="flex flex-col gap-y-1">
+                                    <p className="text-muted-foreground text-xs">Subtitles status</p>
+                                    <p className="text-sm ">
+                                        {snakeCaseToTitle(video.muxTrackStatus || "no_subtitles")}
+                                    </p>
+                                </div>
+                            </div>    
                             </div>
                         </div>
+
+                        <FormField 
+                            control={form.control}
+                            name="visibility"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Visibility
+                                    </FormLabel>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value ?? undefined} >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select visibility" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="public">
+                                                <div className="flex items-center">
+                                                    <Globe2Icon className="size-4 mr-2" />
+                                                    Public
+                                                </div>
+                                            </SelectItem>
+                                            <SelectItem value="private">
+                                                <div className="flex items-center">
+                                                    <LockIcon className="size-4 mr-2" />
+                                                    Private
+                                                </div>
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
                     </div>
                 </div>
             </form>
