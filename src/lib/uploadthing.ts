@@ -1,3 +1,5 @@
+// Generate Upload Thing Website
+
 import {
     generateUploadButton,
     generateUploadDropzone,
