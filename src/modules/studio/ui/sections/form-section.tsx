@@ -98,6 +98,17 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
         }
     });
 
+    
+    const generateThumbnail = trpc.videos.generateThumbnail.useMutation({
+        onSuccess: () => {
+            toast.success("Background job started", { description: "This may take some time" });
+            // router.push("/studio");
+        },
+        onError: () => {
+            toast.error("Error updating video details");
+        }
+    });
+
     // mengembalikan thumbnail
     const restoreThumbnail = trpc.videos.restoreThumbnail.useMutation({
         onSuccess: () => {
@@ -246,11 +257,16 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                                                 <ImagePlusIcon className="size-4 mr-1" />
                                                                 Change
                                                             </DropdownMenuItem>
-                                                            <DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={() => generateThumbnail.mutate({ id: videoId })}
+                                                                className="cursor-pointer"
+                                                            >
                                                                 <SparklesIcon className="size-4 mr-1" />
                                                                 AI-generated
                                                             </DropdownMenuItem>
-                                                            <DropdownMenuItem className="cursor-pointer" onClick={() => restoreThumbnail.mutate({ id: videoId })}>
+                                                            <DropdownMenuItem 
+                                                                className="cursor-pointer" 
+                                                                onClick={() => restoreThumbnail.mutate({ id: videoId })}>
                                                                 <RotateCcwIcon className="size-4 mr-1" />
                                                                 Restore
                                                             </DropdownMenuItem>
