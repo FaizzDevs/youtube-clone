@@ -6,7 +6,7 @@ import { trpc } from "@/trpc/client";
 import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Button } from "@/components/ui/button";
-import { MoreVerticalIcon, TrashIcon, CopyIcon, CopyCheckIcon, Globe2Icon, LockIcon, ImagePlusIcon, SparklesIcon, RotateCcwIcon } from "lucide-react";
+import { MoreVerticalIcon, TrashIcon, CopyIcon, CopyCheckIcon, Globe2Icon, LockIcon, ImagePlusIcon, SparklesIcon, RotateCcwIcon, Loader2Icon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,8 @@ import { snakeCaseToTitle } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
+import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
+import { ThumbnailGenerateModal } from "../components/thumbnail-generate-modal";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -41,9 +43,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
-
-
 
 
 interface FormSectionProps {
@@ -69,6 +68,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     const utils = trpc.useUtils();
 
     const [thumbnailModalOpen, setThumbnailModalOpen] = useState(false); // set change thumbnail
+    const [thumbnailGenerateModalOpen, setThumbnailGenerateModalOpen] = useState(false); // set change thumbnail
 
     const [video] = trpc.studio.getOne.useSuspenseQuery({ id: videoId });
     const [categories] = trpc.categories.getMany.useSuspenseQuery();
@@ -99,7 +99,17 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     });
 
     
-    const generateThumbnail = trpc.videos.generateThumbnail.useMutation({
+    const generateDescription = trpc.videos.generateDesc.useMutation({
+        onSuccess: () => {
+            toast.success("Background job started", { description: "This may take some time" });
+            // router.push("/studio");
+        },
+        onError: () => {
+            toast.error("Error updating video details");
+        }
+    });
+
+    const generateTitle = trpc.videos.generateTitle.useMutation({
         onSuccess: () => {
             toast.success("Background job started", { description: "This may take some time" });
             // router.push("/studio");
@@ -148,6 +158,12 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     return (
         <>
             {/* change thumbnail */}
+            <ThumbnailGenerateModal 
+                open={thumbnailGenerateModalOpen}
+                onOpenChange={setThumbnailGenerateModalOpen}
+                videoId={videoId}
+            />
+
             <ThumbnailUploadModal 
                 open={thumbnailModalOpen}
                 onOpenChange={setThumbnailModalOpen}
@@ -188,7 +204,20 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
-                                            Title
+                                            <div className="flex items-center gap-x-2">
+                                                Title
+                                                <Button
+                                                    size="icon"
+                                                    variant="outline"
+                                                    type="button"
+                                                    className="rounded-full size-6 [&_svg]:size-3"
+                                                    onClick={() => generateTitle.mutate({ id: videoId })}
+                                                    disabled={generateTitle.isPending || !video.muxTrackId}
+                                                    aria-label="Generate title"
+                                                >
+                                                    {generateTitle.isPending ? <Loader2Icon className="animate-spin" /> : <SparklesIcon />}
+                                                </Button>
+                                            </div>
                                             {/* Add AI generate button */}
                                         </FormLabel>
                                         <FormControl>
@@ -207,8 +236,20 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
+                                        <div className="flex items-center gap-x-2">
                                             Description
-                                            {/* Add AI generate button */}
+                                                <Button
+                                                    size="icon"
+                                                    variant="outline"
+                                                    type="button"
+                                                    className="rounded-full size-6 [&_svg]:size-3"
+                                                    onClick={() => generateDescription.mutate({ id: videoId })}
+                                                    disabled={generateDescription.isPending || !video.muxTrackId}
+                                                    aria-label="Generate title"
+                                                >
+                                                    {generateDescription.isPending ? <Loader2Icon className="animate-spin" /> : <SparklesIcon />}
+                                                </Button>
+                                            </div>
                                         </FormLabel>
                                         <FormControl>
                                             <Textarea 
@@ -258,7 +299,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                                                 Change
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
-                                                                onClick={() => generateThumbnail.mutate({ id: videoId })}
+                                                                onClick={() => setThumbnailGenerateModalOpen(true)}
                                                                 className="cursor-pointer"
                                                             >
                                                                 <SparklesIcon className="size-4 mr-1" />
