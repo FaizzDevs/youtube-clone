@@ -37,7 +37,7 @@ export const videosRouter = createTRPCRouter({
         }),
 
     generateThumbnail: protectedProcedure
-        .input(z.object({ id: z.string().uuid(), prompt: z.string().min(10)}))
+        .input(z.object({ id: z.string().uuid(), prompt: z.string().min(10) }))
         .mutation(async ({ ctx, input }) => {
             const { id: userId } = ctx.user;
 

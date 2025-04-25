@@ -42,6 +42,8 @@ export const ThumbnailGenerateModal = ({
     const generateThumbnail = trpc.videos.generateThumbnail.useMutation({
         onSuccess: () => {
             toast.success("Background job started", { description: "This may take some time" });
+            form.reset();
+            onOpenChange(false);
             // router.push("/studio");
         },
         onError: () => {
@@ -88,6 +90,7 @@ export const ThumbnailGenerateModal = ({
                     />
                     <div className="flex justify-end gap-2">
                         <Button
+                            disabled={generateThumbnail.isPending}
                             type="submit"
                         >
                             Generate

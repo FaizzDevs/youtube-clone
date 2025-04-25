@@ -22,6 +22,7 @@ import Image from "next/image";
 import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
 import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
 import { ThumbnailGenerateModal } from "../components/thumbnail-generate-modal";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -60,7 +61,42 @@ export const FormSection = ({ videoId }: FormSectionProps) => {
 };
 
 const FormSectionSkeleton = () => {
-    return <p>Loading....</p>
+    return (
+        <div>
+            <div className="flex items-center justify-between lg:w-[1600px] mb-6">
+                <div className="space-y-2">
+                    <Skeleton className="h-7 w-32" />
+                    <Skeleton className="h-4 w-40" />
+                </div>
+                <Skeleton className="h-9 w-24" />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 justify-between lg:w-[1600px]">
+                <div className="space-y-6 lg:col-span-3">
+                    <div className="space-y-4">
+                        <Skeleton className="h-5 w-16" />
+                        <Skeleton className="h-10 w-[900px]" />
+                    </div>
+                    <div className="space-y-4">
+                        <Skeleton className="h-5 w-24" />
+                        <Skeleton className="h-[220px] w-[900px]" />
+                    </div>
+                    <div className="space-y-4">
+                        <Skeleton className="h-5 w-20" />
+                        <Skeleton className="h-[170px] w-[320px]" />
+                    </div>
+                    <div className="space-y-4">
+                        <Skeleton className="h-5 w-16" />
+                        <Skeleton className="h-10 w-[900px]" />
+                    </div>
+                </div>
+                <div className="flex flex-col lg:col-span-2 bg-pink-500">
+                    <div className="flex flex-col gap-4 bg-[#F9F9F9] rounded-xl overflow-hidden">
+                        <Skeleton className="aspect-video" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
 }
 
 const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
