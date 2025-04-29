@@ -75,10 +75,6 @@ export const POST = async (request: Request) => {
                 return new Response("Missing playback ID", { status: 400 });
             }
 
-            await workflow.trigger({
-                url: ".../api/videos/initial-thumbnail"
-            })
-
             // thumbnail video
             const tempThumbnailUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg`;
             const tempPreviewUrl = `https://image.mux.com/${playbackId}/animated.gif`;
