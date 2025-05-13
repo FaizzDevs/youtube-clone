@@ -16,14 +16,14 @@ export const VideoTopRow = ({ video }: VideoTopRowProps) => {
     const compactViews = useMemo(() => {
         return Intl.NumberFormat("en", {
             notation: "compact"
-        }).format(3947812);
-    }, []);
+        }).format(video.viewCount);
+    }, [video.viewCount]);
 
     const expendedViews = useMemo(() => {
         return Intl.NumberFormat("en", {
             notation: "standard"
-        }).format(3947812);
-    }, []);
+        }).format(video.viewCount);
+    }, [video.viewCount]);
 
     // waktu & tanggal diupload video
     const compactDate = useMemo(() => {
