@@ -45,6 +45,8 @@ export const videosRouter = createTRPCRouter({
                         ...getTableColumns(users),
                     },
                     viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
+
+                    //total like
                     likeCount: db.$count(
                         videoReactions, 
                         and(
@@ -53,6 +55,7 @@ export const videosRouter = createTRPCRouter({
                         ),
                     ),
 
+                    // total dislike
                     dislikeCount: db.$count(
                         videoReactions, 
                         and(
@@ -80,6 +83,7 @@ export const videosRouter = createTRPCRouter({
             return existingVideo;
         }),
 
+        // generate deskripsi di schema
     generateDesc: protectedProcedure
         .input(z.object({ id: z.string().uuid() }))
         .mutation(async ({ ctx, input }) => {
@@ -93,6 +97,7 @@ export const videosRouter = createTRPCRouter({
             return workflowRunId;
         }),
 
+    //generate title di schema    
     generateTitle: protectedProcedure
         .input(z.object({ id: z.string().uuid() }))
         .mutation(async ({ ctx, input }) => {
@@ -106,6 +111,7 @@ export const videosRouter = createTRPCRouter({
             return workflowRunId;
         }),
 
+    // generate thumbnail di schema    
     generateThumbnail: protectedProcedure
         .input(z.object({ id: z.string().uuid(), prompt: z.string().min(10) }))
         .mutation(async ({ ctx, input }) => {
