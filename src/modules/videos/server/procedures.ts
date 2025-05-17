@@ -1,16 +1,16 @@
 import { db } from "@/db";
-import { users, videoReactions, videos, videoUpdateSchema, videoViews } from "@/db/schema";
+import { subscriptions, users, videoReactions, videos, videoUpdateSchema, videoViews } from "@/db/schema";
 import { mux } from "@/lib/mux";
 import { workflow } from "@/lib/workflow";
 import { baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { and, eq, getTableColumns, inArray } from "drizzle-orm";
+import { and, eq, getTableColumns, inArray, isNotNull, sql } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
 import { z } from "zod";
 
 export const videosRouter = createTRPCRouter({
 
-    getOne : baseProcedure
+    getOne: baseProcedure
         .input(z.object({ id: z.string().uuid() }))
         .query(async ({ input, ctx }) => {
             const { clerkUserId } = ctx;
@@ -36,13 +36,22 @@ export const videosRouter = createTRPCRouter({
                     .where(inArray(videoReactions.userId, userId ? [userId] : []))
             );
 
-            // like and dislike to database
+            const viewerSubcriptions = db.$with("viewer_subscriptions").as(
+                db
+                    .select()
+                    .from(subscriptions)
+                    .where(inArray(subscriptions.viewerId, userId ? [userId] : []))
+            )
+
+            // yang ada pada videoId
             const [existingVideo] = await db
-                .with(viewerReactions)
+                .with(viewerReactions, viewerSubcriptions)
                 .select({
                     ...getTableColumns(videos),
                     user: {
                         ...getTableColumns(users),
+                        subscriberCount: db.$count(subscriptions, eq(subscriptions.creatorId, users.id)), // menghitung subscriber
+                        viewerSubscribed: sql<boolean>`bool_or(${isNotNull(viewerSubcriptions.viewerId)})`.as("viewer_subscribed"),
                     },
                     viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
 
@@ -68,6 +77,7 @@ export const videosRouter = createTRPCRouter({
                 .from(videos)
                 .innerJoin(users, eq(videos.userId, users.id))
                 .leftJoin(viewerReactions, eq(viewerReactions.videoId, videos.id))
+                .leftJoin(viewerSubcriptions, eq(viewerSubcriptions.creatorId, users.id))
                 .where(eq(videos.id, input.id))
                 // .limit(1)
                 .groupBy(

@@ -21,8 +21,10 @@ export const VideoOwner = ({ user, videoId }: VideoOwnerProps) => {
                     <UserAvatar size="lg" imageUrl={user.imageUrl} name={user.name} />
                     <div className="flex flex-col gap-1 min-w-0">
                         <UserInfo size="lg" name={user.name} />
+                        
+                        {/* Subscriber Count */}
                         <span className="text-sm text-muted-foreground line-clamp-1">
-                            {0} subcribers
+                            {user.subscriberCount} subcribers
                         </span>
                     </div>
                 </div>
