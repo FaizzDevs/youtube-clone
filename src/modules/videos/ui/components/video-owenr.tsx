@@ -13,9 +13,13 @@ interface VideoOwnerProps {
 };
 
 export const VideoOwner = ({ user, videoId }: VideoOwnerProps) => {
-    const { userId: clerkUserId } = useAuth();
-    const {} = useSubscribtion({
-        // SAMPE SINI YAA
+    const { userId: clerkUserId, isLoaded } = useAuth();
+
+    // fungsi subscribe
+    const { isPending, onClick } = useSubscribtion({
+        userId: user.id,
+        isSubscribed: user.viewerSubscribed,
+        fromVideoId: videoId,
     })
 
     return (
@@ -46,10 +50,13 @@ export const VideoOwner = ({ user, videoId }: VideoOwnerProps) => {
                     </Link>
                 </Button>
             ) : (
+
+                // fungsi subscribe
+                // jika user sudah subscribe, maka tampilkan button unsubscribe
                 <SubscriptionButton 
-                    onClick={() => {}}
-                    disabled={false}
-                    isSubscribed={false}
+                    onClick={onClick} // change to subscribe
+                    disabled={isPending || !isLoaded} // change to subscribe or unsubscribe
+                    isSubscribed={user.viewerSubscribed}
                     className="flex-none"
                 />
             )}
