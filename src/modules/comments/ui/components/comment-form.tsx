@@ -18,7 +18,7 @@ import {
 
 interface CommentFormProps {
     videoId: string;
-    onSuccess: () => void;
+    onSuccess?: () => void;
 };
 
 export const CommentForm = ({
@@ -54,7 +54,7 @@ export const CommentForm = ({
     const form = useForm<z.infer<typeof commentFormSchema>>({
         resolver: zodResolver(commentFormSchema),
         defaultValues: {
-            videoId,
+            videoId: videoId,
             value: "",
         },
     });
@@ -87,7 +87,7 @@ export const CommentForm = ({
                                         className="resize-none bg-transparent overflow-hidden min-h-0"
                                     />
                                 </FormControl>
-                                {/* SAMPE SINI YAAAA */}
+                                
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -96,6 +96,7 @@ export const CommentForm = ({
                 
                     <div className="flex justify-end gap-2 mt-2">
                         <Button
+                            disabled= {create.isPending}
                             type="submit"
                             size="sm"
                         >
