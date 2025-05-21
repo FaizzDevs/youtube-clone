@@ -48,6 +48,7 @@ export const commentsRouter = createTRPCRouter({
                 .select({
                     ...getTableColumns(comments), // ambil semua tabel comments
                     user: users,
+                    totalCount: db.$count(comments, eq(comments.videoId, videoId)), // ambil total comment
                 })
                 .from(comments)
                 .where(and(
