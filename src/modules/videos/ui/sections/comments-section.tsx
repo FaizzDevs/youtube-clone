@@ -7,6 +7,7 @@ import { DEFAULT_LIMIT } from "@/constants";
 import { CommentForm } from "@/modules/comments/ui/components/comment-form";
 import { CommentItem } from "@/modules/comments/ui/components/comment-item";
 import { trpc } from "@/trpc/client";
+import { Loader2Icon } from "lucide-react";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -16,11 +17,19 @@ interface CommentsSectionProps {
 
 export const CommentsSection = ({ videoId }: CommentsSectionProps) => {
     return (
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<CommentsSectionSkeleton />}>
             <ErrorBoundary fallback={<p>Error</p>}>
                 <CommentsSectionSuspense videoId={videoId} />
             </ErrorBoundary>
         </Suspense>
+    )
+}
+
+const CommentsSectionSkeleton = () => {
+    return (
+        <div className="mt-6 flex justify-center items-center">
+            <Loader2Icon className="text-muted-foreground size-7 animate-spin"/>
+        </div>
     )
 }
 
@@ -32,19 +41,13 @@ const CommentsSectionSuspense = ({ videoId }: CommentsSectionProps) => {
     }, {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
     });
-    
-    // // Kalkulasi total comments yang ada pada videId
-    // const totalComments = comments.pages.reduce(
-    //     (acc, page) => acc + page.items.length,
-    //     0
-    // );
 
     return (
         <div className="mt-4">
             <div className="flex flex-col gap-6">
                 <h1 className="text-lg font-semibold">
-                    {comments.pages[0].items[0].totalCount} Comments 
-                    {/* SAMPAI SINI DULU YAAA */}
+                    {/* total komen */}
+                    {comments.pages[0].totalCount} Comments 
                 </h1>
                 <CommentForm videoId={videoId} />
 
