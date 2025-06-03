@@ -1,7 +1,7 @@
 // DATABASE
 
 import { integer, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid, primaryKey, foreignKey } from "drizzle-orm/pg-core";
-import { Many, relations } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import {
     createInsertSchema,
     createSelectSchema,
@@ -131,8 +131,9 @@ export const comments = pgTable("comments", {
 }, (t) => {
     return [
         foreignKey({
-            column: [t.parentId],
-            // SAMPE SINI DULU
+            columns: [t.parentId],
+            foreignColumns: [t.id],
+            name: "comments_parent_id_fkey",
         })
     ]
 });
@@ -146,7 +147,15 @@ export const commentsRelations = relations(comments, ({ one, many }) => ({
         fields: [comments.videoId],
         references: [videos.id],
     }),
-    reactions: many(commentReactions)
+    parent: one(comments, {
+        fields: [comments.parentId],
+        references: [comments.id],
+        relationName: "comments_parent_id_fkey",
+    }),
+    reactions: many(commentReactions),
+    replies: many(comments, {
+        relationName: "comments_parent_id_fkey",
+    }),
 }));
 
 export const commentSelectSchema = createSelectSchema(comments);
