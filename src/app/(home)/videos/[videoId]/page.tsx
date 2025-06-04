@@ -12,8 +12,9 @@ interface PageProps {
 const Page = async ({ params }: PageProps) => {
     const { videoId } = await params;
 
-    void trpc.videos.getOne.prefetch({ id: videoId }); // 
-    void trpc.comments.getMany.prefetchInfinite({ videoId, limit: DEFAULT_LIMIT });
+    void trpc.videos.getOne.prefetch({ id: videoId }); // mengambil data sebelum komponen di render
+    void trpc.comments.getMany.prefetchInfinite({ videoId, limit: DEFAULT_LIMIT }); // mengambil daftar komentar (prefetchInfinite=infinite scroll)
+    void trpc.suggestions.getMany.prefetchInfinite({ videoId, limit: DEFAULT_LIMIT }); // mengambil suggest/saran video
 
     return (
         <HydrateClient>

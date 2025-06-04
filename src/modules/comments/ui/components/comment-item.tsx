@@ -83,7 +83,7 @@ export const CommentItem = ({ comment, variant = "comment" }: CommentItemProps) 
             <div className="flex gap-4">
                 <Link href={`/users/${comment.userId}`}>
                     <UserAvatar 
-                        size="lg"
+                        size={variant === "comment" ? "lg" : "sm"}
                         imageUrl={comment.user.imageUrl}
                         name={comment.user.name}
                     />
@@ -154,31 +154,35 @@ export const CommentItem = ({ comment, variant = "comment" }: CommentItemProps) 
                     </div>
                 </div>
 
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="size-8">
-                            <MoreVerticalIcon />
-                        </Button>
-                    </DropdownMenuTrigger>
+                {/* pengecekan user apakah sudah login atau belum */}
+                {comment.user.clerkId !== userId && variant === "comment" && (
 
-                    <DropdownMenuContent align="end">
+                    <DropdownMenu modal={false}>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="size-8">
+                                <MoreVerticalIcon />
+                            </Button>
+                        </DropdownMenuTrigger>
 
-                        {variant === "comment" && (
-                            <DropdownMenuItem onClick={() => setIsReplyOpen(true)}>
-                                <MessageSquareIcon className="size-4"/>
-                                Reply
-                            </DropdownMenuItem>
-                        )}
+                        <DropdownMenuContent align="end">
 
-                        {/* remove komen muncul pada sisi pengguna itu sendiri */}
-                        {comment.user.clerkId === userId && (
-                            <DropdownMenuItem onClick={() => remove.mutate({ id: comment.id })}>
-                                <Trash2Icon className="size-4"/>
-                                Delete
-                            </DropdownMenuItem>
-                        )}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                            {/* {variant === "comment" && ( */}
+                                <DropdownMenuItem onClick={() => setIsReplyOpen(true)}>
+                                    <MessageSquareIcon className="size-4"/>
+                                    Reply
+                                </DropdownMenuItem>
+                            {/* )} */}
+
+                            {/* remove komen muncul pada sisi pengguna itu sendiri */}
+                            {comment.user.clerkId === userId && (
+                                <DropdownMenuItem onClick={() => remove.mutate({ id: comment.id })}>
+                                    <Trash2Icon className="size-4"/>
+                                    Delete
+                                </DropdownMenuItem>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )}
             </div>
 
             {/* open UI comment ketika klik reply */}

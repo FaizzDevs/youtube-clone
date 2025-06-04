@@ -3,10 +3,10 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button"
 
 interface InfiniteScrollProps {
-    isManual?: boolean;
-    hasNextPage: boolean;
-    isFetchingNextPage: boolean;
-    fetchNextPage: () => void;
+    isManual?: boolean; // jika true, maka load lewat button
+    hasNextPage: boolean; // cek apakah masih ada data
+    isFetchingNextPage: boolean; // apakah sedang mengambil data berikutnya
+    fetchNextPage: () => void; // untuk mengambil data berikutnya
 }
 
 export const InfiniteScroll = ({

@@ -1,4 +1,5 @@
-// import { z } from 'zod';
+// ROUTER AGAR BISA DI PANGGIL DALAM SISI FRONT END
+
 import { studioRouter } from '@/modules/studio/server/procedures';
 import { createTRPCRouter } from '../init';
 import { categoriesRouter } from '@/modules/categories/server/procedures';
@@ -8,6 +9,7 @@ import { videoReactionsRouter } from '@/modules/video-reactions/server/procedure
 import { subscriptionsRouter } from '@/modules/subscriptions/server/procedure';
 import { commentsRouter } from '@/modules/comments/server/procedures';
 import { commentReactionsRouter } from '@/modules/comment-reactions/server/procedures';
+import { sugesstionsRouter } from '@/modules/suggestions/server/procedures';
 
 export const appRouter = createTRPCRouter({
   // hello: baseProcedure.query(() => {
@@ -21,6 +23,7 @@ export const appRouter = createTRPCRouter({
   subscriptions: subscriptionsRouter,
   comments: commentsRouter,
   commentReactions: commentReactionsRouter,
+  suggestions: sugesstionsRouter,
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;
