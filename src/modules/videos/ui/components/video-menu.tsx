@@ -1,3 +1,5 @@
+// UI Video menu samping like
+
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -16,7 +18,7 @@ interface VideoMenuProps {
 
 export const VideoMenu = ({
     videoId,
-    variant,
+    variant = "ghost",
     onRemove
 }: VideoMenuProps) => {
     // share URL video
