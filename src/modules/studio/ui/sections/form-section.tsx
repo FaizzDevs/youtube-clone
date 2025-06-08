@@ -152,6 +152,18 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
         }
     });
 
+    // memvalidasi video
+    const revalidate = trpc.videos.revalidate.useMutation({
+        onSuccess: () => {
+            utils.studio.getMany.invalidate();
+            utils.studio.getOne.invalidate({ id: videoId });
+            toast.success("Video revalidated");
+        },
+        onError: () => {
+            toast.error("Ada kesalahan");
+        }
+    });
+
     
     const generateDescription = trpc.videos.generateDesc.useMutation({
         onSuccess: () => {
@@ -245,6 +257,11 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
                                     <DropdownMenuItem onClick={() => remove.mutate({ id: videoId })}>
                                         <TrashIcon className="size-4 mr-2" />
                                         Delete
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem onClick={() => revalidate.mutate({ id: videoId })}>
+                                        <RotateCcwIcon className="size-4 mr-2" />
+                                        Revalidate
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
