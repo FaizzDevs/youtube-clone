@@ -33,7 +33,36 @@ export const POST = async (request: Request) => {
         return new Response("No signature found", { status: 401 });
     }
 
-    const payload = await request.json();
+    // const payload = await request.json();
+    // const body = JSON.stringify(payload);
+
+    const rawBody = await request.text()
+
+    if(!rawBody) {
+        return new Response("Empty body", { status: 400 })
+    }
+
+    let payload: unknown;
+    try {
+        payload = JSON.parse(rawBody);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+        return new Response("Invalid JSON", { status: 400 })    
+    }
+
+    // Narrow payload to expected type
+    if (
+        typeof payload === "object" &&
+        payload !== null &&
+        "type" in payload &&
+        "data" in payload
+    ) {
+        // payload is now typed as { type: string; data: unknown }
+    } else {
+        return new Response("Invalid payload structure", { status: 400 });
+    }
+    const typedPayload = payload as { type: WebhookEvent["type"]; data: unknown };
+
     const body = JSON.stringify(payload);
 
     mux.webhooks.verifySignature(
@@ -43,7 +72,7 @@ export const POST = async (request: Request) => {
         SIGNING_SECRET,
     );
 
-    switch (payload.type as WebhookEvent["type"]) {
+    switch (typedPayload.type as WebhookEvent["type"]) {
         case "video.asset.created": {
             const data = payload.data as VideoAssetCreatedWebhookEvent["data"];
 
