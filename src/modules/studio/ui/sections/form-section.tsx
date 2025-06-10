@@ -44,6 +44,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { APP_URL } from "@/constants";
 
 
 interface FormSectionProps {
@@ -208,7 +209,7 @@ const FormSectionSuspense = ({ videoId }: FormSectionProps) => {
     };
 
     // build link url video
-    const fullUrl = `${process.env.VERCEL_URL || "http://localhost:3000"}/videos/${video.id}`;
+    const fullUrl = `${APP_URL} || "http://localhost:3000"}/videos/${video.id}`;
     const [isCopied, setIsCopied] = useState(false);
 
     // copy URL video
