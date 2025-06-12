@@ -3,20 +3,28 @@
 import { Button } from "@/components/ui/button";
 import { APP_URL } from "@/constants";
 import { SearchIcon, XIcon } from "lucide-react"
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react"
 
 export const SearchInput = () => {
     const router = useRouter();
-    const [value, setValue] = useState("");
+    const searchParams = useSearchParams(); // membaca query parameters
+    const query = searchParams.get("query") || ""; // jikda tidak ada query maka kosong
+    const categoryId = searchParams.get("categoryId") || "";
+    const [value, setValue] = useState(query); // membuat state dengan awalan query
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {  // penanganan saat form dikirim
         e.preventDefault(); // mencegah browser reload saat mengirim form
 
-        const url = new URL("/search", APP_URL ? `https://${APP_URL}` : "http://localhost:3000"); // membuat url baru / (window.location.origin) jika url masih local
+        const url = new URL("/search", APP_URL); // membuat url baru / (window.location.origin) jika url masih local
         const newQuery = value.trim(); // menghapus spasi di awal dan di akhir
 
         url.searchParams.set("query", encodeURIComponent(newQuery)); // di encode agar aman dari spasi
+
+        // pencarian berdasarkan category
+        if (categoryId) {
+            url.searchParams.set("categoryId", categoryId);
+        }
 
         if (newQuery === ""){
             url.searchParams.delete("query");

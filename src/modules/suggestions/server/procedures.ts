@@ -46,8 +46,6 @@ export const sugesstionsRouter = createTRPCRouter({
                     eq(videoReactions.videoId, videos.id),
                     eq(videoReactions.type, "dislike"),
                 )),
-
-
             })
             .from(videos)
             .innerJoin(users, eq(videos.userId, users.id)) // menggabungkan tabel user dan videos
