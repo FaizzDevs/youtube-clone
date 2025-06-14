@@ -1,5 +1,5 @@
-// MENAMPILKAN TAMPILAN UTAMA
-import { HomeVideosSection } from "../sections/home-videos-section";
+// MENAMPILKAN TAMPILAN UTAMA TRENDING
+import { TrendingVideosSection } from "../sections/trending-videos-section";
 
 export const TrendingView = () => {
     return (
@@ -8,7 +8,7 @@ export const TrendingView = () => {
                 <h1 className="text-2xl font-bold">Trending</h1>
                 <p className="text-xs text-muted-foreground">Most popular videos at the moment</p>
             </div>
-            <HomeVideosSection categoryId={categoryId} />
+            <TrendingVideosSection />
         </div>
     )
 }

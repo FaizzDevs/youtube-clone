@@ -1,3 +1,5 @@
+// TAMPILAN UI SIDEBAR
+
 "use client"
 
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
@@ -13,7 +15,7 @@ const items = [
     },
     {
         title: "Subscriptions",
-        url: "/feed/subscriptions",
+        url: "/feed/subscribed",
         icon: PlaySquareIcon,
         auth: true,
     },
@@ -39,7 +41,7 @@ export const MainSection = () => {
                                 asChild
                                 isActive={false} 
                                 onClick={(e) => {
-                                    if (!isSignedIn && item.auth) {
+                                    if (!isSignedIn && item.auth) { // memastikan user sudah login
                                         e.preventDefault();
                                         return clerk.openSignIn();
                                     }
