@@ -1,3 +1,5 @@
+// KONDISI UI KETIKA SCROOL
+
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button"
@@ -38,7 +40,7 @@ export const InfiniteScroll = ({
                 </Button>
             ) : (
                 <p className="text-xs text-muted-foreground">
-                    You have reached the end of the list
+                    Sudah mencapai batas akhir.
                 </p>
             )}
         </div>
