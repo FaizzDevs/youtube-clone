@@ -43,6 +43,7 @@ export const VideoReactions = ({
     const dislikeMutation = trpc.videoReactions.dislike.useMutation({
         onSuccess: () => {
             utils.videos.getOne.invalidate({ id: videoId });
+            utils.playlists.getLiked.invalidate();
         },
         onError: (error) => {
             toast.error("Ada kesalahan");

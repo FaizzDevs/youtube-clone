@@ -8,17 +8,17 @@ import { trpc } from "@/trpc/client";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
-export const HistoryVideosSection = () => {
+export const LikedVideosSection = () => {
     return (
-        <Suspense fallback={<HistoryVideosSectionSkeleton />}>
+        <Suspense fallback={<LikedVideosSectionSkeleton />}>
             <ErrorBoundary fallback={<p>Error</p>}>
-                <HistoryVideosSectionSuspense />
+                <LikedVideosSectionSuspense />
             </ErrorBoundary>
         </Suspense>
     )
 }
 
-const HistoryVideosSectionSkeleton = () => {
+const LikedVideosSectionSkeleton = () => {
     return (
         <div>
             <div className="flex flex-col gap-4 gap-y-10 md:hidden">
@@ -40,8 +40,8 @@ const HistoryVideosSectionSkeleton = () => {
     )
 }
 
-const HistoryVideosSectionSuspense = () => {
-    const [videos, query] = trpc.playlists.getHistory.useSuspenseInfiniteQuery( // mengambil data video
+const LikedVideosSectionSuspense = () => {
+    const [videos, query] = trpc.playlists.getLiked.useSuspenseInfiniteQuery( // mengambil data video
         { limit: DEFAULT_LIMIT },
         {
             getNextPageParam: (lastPage) => lastPage.nextCursor,

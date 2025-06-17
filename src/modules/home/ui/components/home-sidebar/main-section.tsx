@@ -6,6 +6,7 @@ import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, Side
 import { HomeIcon, PlaySquareIcon, FlameIcon } from "lucide-react"
 import Link from "next/link"
 import { useAuth, useClerk } from "@clerk/nextjs"
+import { usePathname } from "next/navigation"
 
 const items = [
     {
@@ -29,6 +30,7 @@ const items = [
 export const MainSection = () => {
     const { isSignedIn } = useAuth();
     const clerk = useClerk();
+    const pathName = usePathname(); // mengambil alamat url pada page yang sedang dibuka (tanpa domain dan query string)
 
     return (
         <SidebarGroup>
@@ -39,7 +41,7 @@ export const MainSection = () => {
                             <SidebarMenuButton 
                                 tooltip={item.title}
                                 asChild
-                                isActive={false} 
+                                isActive={pathName === item.url} 
                                 onClick={(e) => {
                                     if (!isSignedIn && item.auth) { // memastikan user sudah login
                                         e.preventDefault();

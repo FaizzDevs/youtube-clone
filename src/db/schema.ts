@@ -10,6 +10,51 @@ import {
 
 export const reactionType = pgEnum("reaction_type", ["like", "dislike"]);
 
+export const playlistVideos = pgTable("playlist_videos", {
+    playlistId: uuid("playlist_id").references(() => playlist.id, {  onDelete: "cascade" }).notNull(), // karena foreign key, jadi ketika playlist dihapus, maka relasi juga ikut terhapus
+    videoId: uuid("video_id").references(() => videos.id, {  onDelete: "cascade" }).notNull(), // refrences (foreign key)
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (t) => [
+    // satu video hanya bisa muncul sekali
+    primaryKey({
+        name: "playlist_videos_pk",
+        columns: [t.playlistId, t.videoId]
+    })
+])
+
+export const playlistVideoReactions = relations(playlistVideos, ({ one }) => ({ // membuat tabel relasi
+    // setiap baris di playlist_videos punya satu playlist
+    playlist: one(playlist,{
+        fields: [playlistVideos.playlistId],
+        references: [playlist.id]
+    }),
+    // setiap baris di playlist_videos juga punya satu video
+    video: one(videos,{
+        fields: [playlistVideos.videoId],
+        references: [videos.id]
+    })
+}))
+
+export const playlist = pgTable("playlists", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    description: text("description"),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(), //jika users.id dihapus, value ini juga akan kehapus secara otomatis    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// membuat relasi untuk tabel playlist
+export const playlistReactions = relations(playlist, ({ one, many }) => ({ // relasi ke tabel users, satu playlist dimiliki oleh satu user
+    user: one(users,{
+        fields: [playlist.userId],
+        references: [users.id]
+    }),
+    // relasi ke tabel playlistVideos
+    playlistVideos: many(playlistVideos) // satu playlist bisa banyak videos
+}))
+
 export const users = pgTable("users", {
     id: uuid("id").primaryKey().defaultRandom(),
     clerkId: text("clerk_id").unique().notNull(),
@@ -32,6 +77,7 @@ export const userRelations = relations(users, ({ many }) => ({
     }),
     comments: many(comments),
     commentReactions: many(commentReactions),
+    playlist: many(playlist)
 }));
 
 export const subscriptions = pgTable("subscriptions", {
@@ -106,7 +152,7 @@ export const videoSelectSchema = createSelectSchema(videos);
 export const videoInsertSchema = createInsertSchema(videos);
 export const videoUpdateSchema = createUpdateSchema(videos);
 
-export const videoRelations = relations(videos, ({ one, many }) => ({
+export const videoRelations = relations(videos, ({ one, many }) => ({ // relasi tabel videos
     user: one(users, {
         fields: [videos.userId],
         references: [users.id],
@@ -118,6 +164,7 @@ export const videoRelations = relations(videos, ({ one, many }) => ({
     views: many(videoViews),
     reactions: many(videoReactions),
     comments: many(comments),
+    playlistVideos: many(playlistVideos),
 }));
 
 export const comments = pgTable("comments", {
