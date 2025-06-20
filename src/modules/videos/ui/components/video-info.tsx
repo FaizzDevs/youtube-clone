@@ -52,6 +52,7 @@ export const VideoInfo = ({ data, onRemove }: VideoInfoProps) => {
                     <h3 className="font-medium line-clamp-1 text-base break-words lg:line-clamp-2">{data.title}</h3>
                 </Link>
 
+                {/* jika di klik maka muncul page user */}
                 <Link href={`/users/${data.user.id}`}>
                     <UserInfo name={data.user.name} />
                 </Link>
