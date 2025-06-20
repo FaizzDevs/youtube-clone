@@ -108,7 +108,7 @@ const  VideoSectionSuspense = () => {
                                         <div className="flex items-center gap-4">
                                             <div className="relative aspect-video w-36 shrink-0">
                                                 <VideoThumbnail 
-                                                    imageUrl={video.thumbnailUrl} 
+                                                    imageUrl={video.thumbnailUrl ?? undefined} 
                                                     previewUrl={video.previewUrl}
                                                     title={video.title}
                                                     duration={video.duration || 0} />
@@ -140,13 +140,13 @@ const  VideoSectionSuspense = () => {
                                         {format(new Date(video.createdAt), "d MMM yyyy")}
                                     </TableCell>
                                     <TableCell className="text-sm">
-                                        views
+                                        {video.viewCount}
                                     </TableCell>
                                     <TableCell className="text-sm">
-                                        comments
+                                        {video.commentsCount}
                                     </TableCell>
                                     <TableCell className="text-sm">
-                                        likes
+                                        {video.likeCount}
                                     </TableCell>
                                 </TableRow>
                             </Link>

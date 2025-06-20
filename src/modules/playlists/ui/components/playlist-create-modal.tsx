@@ -37,8 +37,10 @@ export const PlaylistCreateModal = ({
         },
     });
 
+    const utils = trpc.useUtils(); // untuk mengakses cache dan invalidate query
     const create = trpc.playlists.create.useMutation({  // variable create => mengirim data ke server
         onSuccess: () => {
+            utils.playlists.getMany.invalidate(); // langsung menampilka data terbaru setelah berhasil membuat playlist tanpa perlu refresh
             toast.success("Playlist Berhasil");
             form.reset();
             onOpenChange(false);
@@ -48,7 +50,7 @@ export const PlaylistCreateModal = ({
         }
     });
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const onSubmit = (values: z.infer<typeof formSchema>) => {  // fungsi untuk mengirim hasil pengisian data ke server
         create.mutate(values);
     }
     
