@@ -23,7 +23,7 @@ export const VideosSection = (props: HomeVideosSectionProps) => {
 
 const VideosSectionSkeleton = () => {
     return (
-        <div className="gap-4 gap-y-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-4 [@media(min-width:2200px)]:grid-cols-4">
+        <div className="gap-4 p-6 max-w-[1500px] mx-auto gap-y-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-4 [@media(min-width:2200px)]:grid-cols-4">
             {/* menampilkan video dengan grid */}
             {Array.from({ length: 18 }).map((_, index) => ( // membuat array baru (-, index) => nilai tersebut tidak digunakan sampai index yang dipakai key
                     <VideoGridCardSkeleton key={index} />
@@ -43,7 +43,7 @@ const VideosSectionSuspense = ({ userId }: HomeVideosSectionProps) => {
 
     return (
         <div>
-            <div className="gap-4 max-w-[1500px] mx-auto gap-y-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-4 [@media(min-width:2200px)]:grid-cols-4">
+            <div className="gap-4 p-6 max-w-[1500px] mx-auto gap-y-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-4 [@media(min-width:2200px)]:grid-cols-4">
                 {/* menampilkan video dengan grid */}
                 {videos.pages
                     .flatMap((page) => page.items)

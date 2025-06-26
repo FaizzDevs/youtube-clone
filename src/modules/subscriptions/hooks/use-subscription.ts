@@ -20,6 +20,7 @@ export const useSubscribtion = ({
         onSuccess: () => {
             toast.success("Berhasil Subscribe");
 
+            utils.subscriptions.getMany.invalidate(); // menjalankan server tanpa perlu reload
             utils.videos.getManySubscribed.invalidate();
             utils.users.getOne.invalidate({ id: userId });
 
@@ -42,6 +43,7 @@ export const useSubscribtion = ({
         onSuccess: () => {
             toast.success("Berhasil Unsubscribe");
 
+            utils.subscriptions.getMany.invalidate();
             utils.videos.getManySubscribed.invalidate();
             utils.users.getOne.invalidate({ id: userId });
 

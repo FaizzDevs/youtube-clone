@@ -8,11 +8,59 @@ import { z } from "zod";
 
 const f = createUploadthing();
 
+// upload thumbnail
 export const ourFileRouter = {
+  bannerUploader: f({
+    image: {
+      maxFileSize: "4MB", // max 4mb
+      maxFileCount: 1, // max 1 thumbnail
+    },
+  })
+    .middleware(async () => {
+      const { userId: clerkUserId } = await auth();
+
+      if (!clerkUserId) throw new UploadThingError("Unauthorized");
+
+      const [existingUser] = await db // melakukan pengecekan user
+        .select()
+        .from(users)
+        .where(eq(users.clerkId, clerkUserId));
+
+        if (!existingUser) throw new UploadThingError("Unauthorized");
+
+          if (existingUser.bannerKey) {
+            const utapi = new UTApi();
+
+            await utapi.deleteFiles(existingUser.bannerKey);
+            await db
+              .update(users)
+              .set({ bannerKey: null, bannerUrl: null })
+              .where(and(
+                eq(users.id, existingUser.id)
+              ));
+          }
+
+      return { userId: existingUser.id };
+    })
+
+    .onUploadComplete(async ({ metadata, file }) => { // ketika sukses upload, akan diperbarui db
+      await db
+        .update(users)
+        .set({
+          bannerUrl: file.url,
+          bannerKey: file.key,
+        })
+        .where(and(
+          eq(users.id, metadata.userId)
+        ))
+
+        return { uploadedBy: metadata.userId };
+    }),
+
   thumbnailUploader: f({
     image: {
-      maxFileSize: "4MB",
-      maxFileCount: 1,
+      maxFileSize: "4MB", // max 4mb
+      maxFileCount: 1, // max 1 thumbnail
     },
   })
     .input(z.object({
@@ -23,14 +71,14 @@ export const ourFileRouter = {
 
       if (!clerkUserId) throw new UploadThingError("Unauthorized");
 
-      const [user] = await db
+      const [user] = await db // melakukan pengecekan user
         .select()
         .from(users)
         .where(eq(users.clerkId, clerkUserId));
 
         if (!user) throw new UploadThingError("Unauthorized");
 
-        const [existingVideo] = await db
+        const [existingVideo] = await db //pengecekan video
           .select({ thumbnailKey: videos.thumbnailKey })
           .from(videos)
           .where(and(
@@ -55,7 +103,8 @@ export const ourFileRouter = {
 
       return { user, ...input };
     })
-    .onUploadComplete(async ({ metadata, file }) => {
+
+    .onUploadComplete(async ({ metadata, file }) => { // ketika sukses upload, akan diperbarui db
       await db
         .update(videos)
         .set({

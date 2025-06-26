@@ -16,6 +16,7 @@ interface UserPageInfoProps {
 export const UserPageInfoSkeleton = () => {
     return (
         <div className="py-6">
+
             {/* mobile layout */}
             <div className="flex flex-col md:hidden">
                 <div className="flex items-center gap-3">
@@ -28,6 +29,16 @@ export const UserPageInfoSkeleton = () => {
                 </div>
 
                 <Skeleton className="h-10 w-full mt-3 rounded-full" />
+            </div>
+
+            {/* Desktop */}
+            <div className="hidden md:flex items-start gap-4">
+                <Skeleton className="h-[160px] w-[160px] rounded-full" />
+                <div className="flex-1 min-w-0">
+                    <Skeleton className="h-8 w-64" />
+                    <Skeleton className="h-5 w-48 mt-4" />
+                    <Skeleton className="h-10 w-32 mt-4 rounded-full" />
+                </div>
             </div>
         </div>
     )
