@@ -65,7 +65,7 @@ export const SubscriptionsSection = () => {
                             >
                                 <Link href="/subscriptions" className="flex items-center gap-4">
                                     <ListIcon className="size-4" />
-                                    <span className="text-sm">Semua Subscriber</span>
+                                    <span className="text-sm">All Subscriptions</span>
                                 </Link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>

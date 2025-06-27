@@ -11,7 +11,7 @@ export const HomeNavbar = () => {
                 {/* Menu dan Logo */}
                 <div className="flex items-center flex-shrink-0">
                     <SidebarTrigger />
-                    <Link href="/">
+                    <Link href="/" className="hidden md:block">
                         <div className="p-4 flex items-center gap-1">
                             <Image src="/logo.svg" alt="logo" width={45} height={45}/>
                             <p className="text-xl font-semibold tracking-tight">Youtube Clone</p>
